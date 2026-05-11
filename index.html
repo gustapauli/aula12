@@ -1,0 +1,2058 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Aula 12 — Revolução Americana</title>
+<style>
+  :root {
+    --bg: #F4EFE6;
+    --bg-deep: #1A1814;
+    --ink: #1A1814;
+    --ink-soft: #4A4640;
+    --paper: #FBF7EF;
+    --accent: #B5342B;
+    --accent-soft: #E89A92;
+    --accent2: #2A4A7F;
+    --accent2-soft: #8BA8D4;
+    --line: rgba(26,24,20,0.12);
+    --correct: #2E7D4F;
+    --wrong: #B5342B;
+    --serif: Georgia, 'Times New Roman', serif;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.5;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .app {
+    position: fixed;
+    inset: 0;
+    max-width: 480px;
+    margin: 0 auto;
+    background: var(--bg);
+    overflow: hidden;
+  }
+
+  .progress {
+    position: absolute;
+    top: 10px; left: 12px; right: 12px;
+    height: 18px;
+    display: flex;
+    gap: 2px;
+    z-index: 50;
+    align-items: center;
+    cursor: pointer;
+  }
+  .seg {
+    flex: 1;
+    height: 3px;
+    background: rgba(26,24,20,0.12);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+    transition: height 0.2s ease;
+  }
+  .seg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+  .seg.done::after { transform: scaleX(1); }
+  .seg.current::after { transform: scaleX(1); }
+  .seg.current { height: 4px; }
+
+  .header {
+    position: absolute;
+    top: 34px; left: 0; right: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 24px;
+    z-index: 40;
+    pointer-events: none;
+  }
+  .header span {
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    font-weight: 500;
+  }
+
+  .slides { position: absolute; inset: 0; }
+  .slide {
+    position: absolute;
+    inset: 0;
+    padding: 80px 28px 70px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    opacity: 0;
+    transform: translateX(40px);
+    transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    pointer-events: none;
+    overflow-y: auto;
+  }
+  .slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+  .slide.prev { transform: translateX(-40px); }
+
+  .eyebrow {
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 18px;
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: clamp(28px, 8vw, 38px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 16px;
+  }
+  h1 em, h2 em {
+    font-style: italic;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  h2 {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: clamp(24px, 7vw, 32px);
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    margin-bottom: 14px;
+  }
+  h3 {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 500;
+    font-size: 20px;
+    color: var(--ink-soft);
+    margin-bottom: 12px;
+  }
+  p {
+    font-family: var(--sans);
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--ink);
+    font-weight: 400;
+  }
+  p + p { margin-top: 14px; }
+  .big {
+    font-family: var(--serif);
+    font-size: clamp(22px, 6.5vw, 28px);
+    line-height: 1.25;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .quote {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 22px;
+    line-height: 1.35;
+    color: var(--ink);
+    border-left: 2px solid var(--accent);
+    padding-left: 18px;
+    margin: 8px 0;
+  }
+  .number {
+    font-family: var(--serif);
+    font-size: 88px;
+    font-weight: 800;
+    line-height: 0.9;
+    color: var(--accent);
+    letter-spacing: -0.04em;
+  }
+  .label {
+    font-family: var(--sans);
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+
+  .slide.active > * {
+    animation: fadeUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) backwards;
+  }
+  .slide.active > *:nth-child(1) { animation-delay: 0.05s; }
+  .slide.active > *:nth-child(2) { animation-delay: 0.18s; }
+  .slide.active > *:nth-child(3) { animation-delay: 0.31s; }
+  .slide.active > *:nth-child(4) { animation-delay: 0.44s; }
+  .slide.active > *:nth-child(5) { animation-delay: 0.57s; }
+  .slide.active > *:nth-child(6) { animation-delay: 0.70s; }
+  .slide.active > *:nth-child(7) { animation-delay: 0.83s; }
+  .slide.active > *:nth-child(8) { animation-delay: 0.96s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .tap-zone {
+    position: absolute;
+    top: 60px; bottom: 0;
+    width: 35%;
+    z-index: 30;
+    cursor: pointer;
+  }
+  .tap-zone.left { left: 0; }
+  .tap-zone.right { right: 0; }
+
+  .footer-hint {
+    position: absolute;
+    bottom: 18px; left: 0; right: 0;
+    text-align: center;
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--ink-soft);
+    opacity: 0.6;
+    z-index: 20;
+    pointer-events: none;
+  }
+  .footer-hint .arrow {
+    display: inline-block;
+    animation: nudge 2s ease-in-out infinite;
+  }
+  @keyframes nudge {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(4px); }
+  }
+
+  .illu {
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto 18px;
+    display: block;
+  }
+  .illu.sm { max-width: 180px; }
+  .illu.lg { max-width: 320px; }
+  .illu svg { width: 100%; height: auto; display: block; }
+
+  .draw path, .draw line, .draw circle, .draw rect, .draw polygon, .draw polyline {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: draw 1.6s 0.3s cubic-bezier(0.5, 0, 0.2, 1) forwards;
+  }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+
+  .pulse-dot { animation: pulseDot 1.8s ease-in-out infinite; }
+  @keyframes pulseDot {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.15); }
+  }
+
+  .cover {
+    background: var(--bg-deep);
+    color: var(--paper);
+  }
+  .cover h1 { color: var(--paper); }
+  .cover .eyebrow { color: var(--accent-soft); }
+  .cover p { color: rgba(251,247,239,0.7); }
+  .cover .footer-hint { color: rgba(251,247,239,0.5); }
+
+  .quiz-intro { text-align: center; }
+  .quiz-icon {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 24px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--serif);
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--paper);
+    animation: popIn 0.6s 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+  }
+  @keyframes popIn {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .question-num {
+    font-family: var(--sans);
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+  .question {
+    font-family: var(--serif);
+    font-size: 22px;
+    line-height: 1.3;
+    font-weight: 600;
+    margin-bottom: 24px;
+    letter-spacing: -0.01em;
+  }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option {
+    background: var(--paper);
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.4;
+    color: var(--ink);
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .option:active { transform: scale(0.98); }
+  .option .letter {
+    flex-shrink: 0;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    border: 1.5px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    margin-top: 1px;
+    transition: all 0.2s ease;
+  }
+  .option.correct {
+    background: rgba(46, 125, 79, 0.08);
+    border-color: var(--correct);
+    color: var(--correct);
+  }
+  .option.correct .letter {
+    background: var(--correct);
+    color: white;
+    border-color: var(--correct);
+  }
+  .option.wrong {
+    background: rgba(181, 52, 43, 0.06);
+    border-color: var(--wrong);
+    color: var(--wrong);
+  }
+  .option.wrong .letter {
+    background: var(--wrong);
+    color: white;
+    border-color: var(--wrong);
+  }
+  .option.disabled { pointer-events: none; opacity: 0.55; }
+
+  .feedback {
+    margin-top: 18px;
+    padding: 16px;
+    border-radius: 12px;
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.5;
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.4s ease;
+  }
+  .feedback.show {
+    opacity: 1;
+    max-height: 500px;
+  }
+  .feedback.right {
+    background: rgba(46, 125, 79, 0.08);
+    color: var(--correct);
+    border: 1px solid rgba(46, 125, 79, 0.2);
+  }
+  .feedback.miss {
+    background: rgba(181, 52, 43, 0.06);
+    color: var(--ink);
+    border: 1px solid rgba(181, 52, 43, 0.2);
+  }
+  .feedback strong { font-weight: 700; }
+  .feedback .head {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 16px;
+    margin-bottom: 6px;
+    display: block;
+    font-weight: 600;
+  }
+
+  .end {
+    background: var(--bg-deep);
+    color: var(--paper);
+    text-align: center;
+  }
+  .end h2 { color: var(--paper); }
+  .end p { color: rgba(251,247,239,0.7); }
+  .end .score {
+    font-family: var(--serif);
+    font-size: 72px;
+    font-weight: 800;
+    color: var(--accent-soft);
+    line-height: 1;
+    margin: 20px 0;
+  }
+  .restart {
+    margin-top: 28px;
+    background: var(--accent);
+    color: var(--paper);
+    border: none;
+    padding: 14px 28px;
+    border-radius: 100px;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .restart:active { transform: scale(0.96); }
+
+  .slide::-webkit-scrollbar { display: none; }
+  .slide { scrollbar-width: none; }
+
+  .card-soft {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 18px;
+  }
+  .stamp {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--paper);
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 100px;
+  }
+  .stamp.dark {
+    background: var(--bg-deep);
+    color: var(--accent-soft);
+  }
+  .stamp.blue {
+    background: var(--accent2);
+    color: var(--paper);
+  }
+
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .compare > div {
+    padding: 14px 12px;
+    border-radius: 12px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+  }
+  .compare .a { border-left: 3px solid var(--accent); }
+  .compare .b { border-left: 3px solid var(--accent2); }
+  .compare .head {
+    font-family: var(--sans);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .compare p {
+    font-family: var(--serif);
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  .timeline-item {
+    display: flex;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .timeline-item:last-child { border-bottom: none; }
+  .timeline-item .year {
+    flex-shrink: 0;
+    width: 54px;
+    font-family: var(--serif);
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 15px;
+  }
+  .timeline-item .desc {
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.4;
+  }
+
+  .pillar-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 18px;
+  }
+  .pillar {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 8px;
+    text-align: center;
+  }
+  .pillar svg { width: 36px; height: 36px; margin: 0 auto 6px; display: block; }
+  .pillar .name {
+    font-family: var(--serif);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="progress" id="progress"></div>
+  <div class="header">
+    <span>Aula 12</span>
+    <span id="counter">1 / 1</span>
+  </div>
+
+  <div class="slides" id="slides">
+
+    <!-- 1 — CAPA -->
+    <section class="slide cover active">
+      <div class="eyebrow">História · Aula 12</div>
+      <h1>Treze colônias, uma <em>ideia</em>, um país.</h1>
+      <p style="margin-top: 16px;">Como um bando de fazendeiros construiu, no improviso, o modelo de governo mais duradouro da história.</p>
+      <div class="illu" style="margin-top: 36px;">
+        <svg viewBox="0 0 240 140" class="draw" fill="none" stroke="#E89A92" stroke-width="1.5">
+          <!-- 13 estrelas em círculo -->
+          <g>
+            <circle cx="120" cy="70" r="50" stroke-dasharray="4 4"/>
+            <path d="M120 25 L122 31 L128 31 L123 35 L125 41 L120 37 L115 41 L117 35 L112 31 L118 31 Z" fill="#E89A92"/>
+            <path d="M150 32 L152 38 L158 38 L153 42 L155 48 L150 44 L145 48 L147 42 L142 38 L148 38 Z" fill="#E89A92"/>
+            <path d="M168 55 L170 61 L176 61 L171 65 L173 71 L168 67 L163 71 L165 65 L160 61 L166 61 Z" fill="#E89A92"/>
+            <path d="M168 90 L170 96 L176 96 L171 100 L173 106 L168 102 L163 106 L165 100 L160 96 L166 96 Z" fill="#E89A92"/>
+            <path d="M150 110 L152 116 L158 116 L153 120 L155 126 L150 122 L145 126 L147 120 L142 116 L148 116 Z" fill="#E89A92"/>
+            <path d="M120 118 L122 124 L128 124 L123 128 L125 134 L120 130 L115 134 L117 128 L112 124 L118 124 Z" fill="#E89A92"/>
+            <path d="M90 110 L92 116 L98 116 L93 120 L95 126 L90 122 L85 126 L87 120 L82 116 L88 116 Z" fill="#E89A92"/>
+            <path d="M72 90 L74 96 L80 96 L75 100 L77 106 L72 102 L67 106 L69 100 L64 96 L70 96 Z" fill="#E89A92"/>
+            <path d="M72 55 L74 61 L80 61 L75 65 L77 71 L72 67 L67 71 L69 65 L64 61 L70 61 Z" fill="#E89A92"/>
+            <path d="M90 32 L92 38 L98 38 L93 42 L95 48 L90 44 L85 48 L87 42 L82 38 L88 38 Z" fill="#E89A92"/>
+            <path d="M105 28 L107 34 L113 34 L108 38 L110 44 L105 40 L100 44 L102 38 L97 34 L103 34 Z" fill="#E89A92"/>
+            <path d="M135 28 L137 34 L143 34 L138 38 L140 44 L135 40 L130 44 L132 38 L127 34 L133 34 Z" fill="#E89A92"/>
+            <path d="M105 114 L107 120 L113 120 L108 124 L110 130 L105 126 L100 130 L102 124 L97 120 L103 120 Z" fill="#E89A92"/>
+          </g>
+        </svg>
+      </div>
+      <div class="footer-hint">toque na lateral pra avançar <span class="arrow">→</span></div>
+    </section>
+
+    <!-- 2 -->
+    <section class="slide">
+      <p class="big">Oi.</p>
+      <p style="margin-top: 18px;">Na aula passada, a gente falou da Revolução Francesa.</p>
+      <p>Drama. Guilhotina. Sangue. Napoleão.</p>
+      <p style="font-family: var(--serif); font-style: italic; font-size: 22px; color: var(--accent); margin-top: 10px;">Espetáculo.</p>
+    </section>
+
+    <!-- 3 -->
+    <section class="slide">
+      <div class="eyebrow">Hoje</div>
+      <p>A gente vai pro outro lado do Atlântico.</p>
+      <p>Alguns anos antes da França.</p>
+      <p class="big" style="margin-top: 14px;">A outra grande revolução que destravou o mundo moderno.</p>
+      <div class="illu" style="margin-top: 22px; max-width: 220px;">
+        <svg viewBox="0 0 220 80" class="draw" fill="none" stroke="#B5342B" stroke-width="1.5">
+          <!-- mapa simplificado: Europa e América com Atlântico -->
+          <path d="M10 35 Q20 25 35 30 L45 28 L50 38 L40 45 L25 48 L15 42 Z"/>
+          <path d="M150 25 Q165 18 180 22 L200 28 L208 42 L200 55 L185 60 L170 55 L160 48 L155 38 Z"/>
+          <path d="M55 40 L150 40" stroke-dasharray="3 3"/>
+          <path d="M145 35 L150 40 L145 45"/>
+          <text x="80" y="36" font-family="Georgia" font-size="9" fill="#4A4640" font-style="italic">Atlântico</text>
+        </svg>
+      </div>
+    </section>
+
+    <!-- 4 — comparação fio condutor -->
+    <section class="slide">
+      <div class="eyebrow">Fio condutor</div>
+      <p>As duas revoluções beberam das <strong>mesmas fontes</strong>.</p>
+      <p>Mesmo Iluminismo. Mesmos Locke, Montesquieu, Rousseau.</p>
+      <p class="big" style="margin-top: 14px;">Mas o resultado foi muito diferente.</p>
+    </section>
+
+    <!-- 5 — comparação visual -->
+    <section class="slide">
+      <h2>Duas revoluções, dois caminhos.</h2>
+      <div class="compare">
+        <div class="a">
+          <div class="head">França</div>
+          <p>Explosão. Caos. Sangue. Ciclo de violência.</p>
+        </div>
+        <div class="b">
+          <div class="head">EUA</div>
+          <p>Cirurgia. Guerra, sim. Mas resultado político estável.</p>
+        </div>
+      </div>
+      <p style="margin-top: 18px;">A Constituição americana, escrita em <strong>1787</strong>, tá em vigor até hoje.</p>
+      <p style="margin-top: 8px; font-family: var(--serif); font-style: italic; font-size: 18px; color: var(--accent);">240 anos. A mais antiga do mundo ainda em uso.</p>
+    </section>
+
+    <!-- 6 — pergunta -->
+    <section class="slide">
+      <p>Como assim?</p>
+      <p style="margin-top: 12px;">Como um bando de fazendeiros e comerciantes, no meio da floresta americana…</p>
+      <p class="big" style="margin-top: 14px;">…construiu, no improviso, um modelo de governo mais robusto que o francês?</p>
+      <p style="margin-top: 14px;">Mais durável que praticamente qualquer outro do planeta.</p>
+      <p style="margin-top: 10px; font-family: var(--serif); font-style: italic; font-size: 18px; color: var(--accent);">É essa história.</p>
+    </section>
+
+    <!-- 7 — CENÁRIO -->
+    <section class="slide">
+      <div class="number">01</div>
+      <div class="label" style="margin-top: 8px;">Cenário</div>
+      <h2 style="margin-top: 12px;">As <em>Treze</em> Colônias.</h2>
+      <div class="illu" style="margin-top: 22px; max-width: 240px;">
+        <svg viewBox="0 0 240 200" class="draw" fill="none" stroke="#B5342B" stroke-width="1.5">
+          <!-- costa leste estilizada -->
+          <path d="M80 20 Q90 30 95 45 Q100 60 105 75 Q110 90 115 105 Q120 120 125 135 Q130 150 135 165 Q140 180 145 190"/>
+          <path d="M80 20 L60 25 L55 40 L65 55 L60 70 L70 85 L65 100 L75 115 L70 130 L80 145 L75 160 L85 175 L145 190"/>
+          <!-- 13 pontos representando as colônias -->
+          <circle cx="75" cy="30" r="3" fill="#B5342B"/>
+          <circle cx="72" cy="45" r="3" fill="#B5342B"/>
+          <circle cx="78" cy="58" r="3" fill="#B5342B"/>
+          <circle cx="82" cy="70" r="3" fill="#B5342B"/>
+          <circle cx="85" cy="83" r="3" fill="#B5342B"/>
+          <circle cx="90" cy="95" r="3" fill="#B5342B"/>
+          <circle cx="95" cy="108" r="3" fill="#B5342B"/>
+          <circle cx="100" cy="120" r="3" fill="#B5342B"/>
+          <circle cx="105" cy="133" r="3" fill="#B5342B"/>
+          <circle cx="112" cy="145" r="3" fill="#B5342B"/>
+          <circle cx="118" cy="158" r="3" fill="#B5342B"/>
+          <circle cx="125" cy="170" r="3" fill="#B5342B"/>
+          <circle cx="135" cy="182" r="3" fill="#B5342B"/>
+        </svg>
+      </div>
+      <p style="margin-top: 10px; text-align: center; font-size: 14px; color: var(--ink-soft); font-style: italic;">Costa leste da América do Norte. Século 18.</p>
+    </section>
+
+    <!-- 8 -->
+    <section class="slide">
+      <p>Treze pedaços diferentes.</p>
+      <p>Com características diferentes.</p>
+      <p>Ligados a uma metrópole comum.</p>
+      <p class="big" style="margin-top: 14px; color: var(--accent);">A Inglaterra.</p>
+      <p style="margin-top: 14px; font-size: 14px; color: var(--ink-soft); font-style: italic;">Não precisa decorar nome. O ponto é entender as diferenças.</p>
+    </section>
+
+    <!-- 9 — Norte vs Sul -->
+    <section class="slide">
+      <div class="eyebrow">Duas regiões, dois mundos</div>
+      <div class="compare">
+        <div class="a">
+          <div class="head">Norte</div>
+          <p style="font-size: 13px;">Protestantes fugindo de perseguição.<br>Comunidade, família, religião.</p>
+        </div>
+        <div class="b">
+          <div class="head">Sul</div>
+          <p style="font-size: 13px;">Extrair riqueza. Plantation.<br>Monocultura e elite branca.</p>
+        </div>
+      </div>
+      <div class="illu" style="margin-top: 20px; max-width: 240px;">
+        <svg viewBox="0 0 240 100" class="draw" fill="none" stroke="#B5342B" stroke-width="1.5">
+          <!-- Norte: casinhas pequenas -->
+          <path d="M20 70 L30 55 L40 70 Z"/>
+          <rect x="22" y="70" width="16" height="14"/>
+          <path d="M50 70 L60 55 L70 70 Z"/>
+          <rect x="52" y="70" width="16" height="14"/>
+          <path d="M80 70 L90 55 L100 70 Z"/>
+          <rect x="82" y="70" width="16" height="14"/>
+          <text x="35" y="98" font-family="Georgia" font-size="9" fill="#4A4640" font-style="italic">vilas pequenas</text>
+          <!-- Sul: plantation grande -->
+          <rect x="150" y="55" width="70" height="30"/>
+          <path d="M150 55 L185 40 L220 55"/>
+          <rect x="160" y="65" width="8" height="20"/>
+          <rect x="178" y="65" width="8" height="20"/>
+          <rect x="196" y="65" width="8" height="20"/>
+          <text x="158" y="98" font-family="Georgia" font-size="9" fill="#4A4640" font-style="italic">plantation</text>
+        </svg>
+      </div>
+    </section>
+
+    <!-- 10 -->
+    <section class="slide">
+      <div class="eyebrow">Norte</div>
+      <p>Massachusetts, Connecticut, e companhia.</p>
+      <p style="margin-top: 12px;">Famílias inteiras vieram de barco. Os famosos peregrinos do <strong>Mayflower</strong>, em 1620.</p>
+      <p style="margin-top: 12px;">Pequenas propriedades. Mão de obra livre. Comércio, manufatura, pesca.</p>
+      <p style="margin-top: 12px;">Sociedade mais igualitária, mais urbana, mais alfabetizada.</p>
+      <p class="big" style="margin-top: 14px;">Praticamente sem escravidão em larga escala.</p>
+    </section>
+
+    <!-- 11 -->
+    <section class="slide">
+      <div class="eyebrow">Sul</div>
+      <p>Virgínia, Carolinas, Geórgia.</p>
+      <p style="margin-top: 12px;">Objetivo claro: <strong>extrair riqueza</strong>.</p>
+      <p style="margin-top: 12px;">Grandes propriedades. Monocultura. Tabaco, depois algodão, arroz, açúcar.</p>
+      <p style="margin-top: 12px;">Mão de obra escrava africana.</p>
+      <p class="big" style="margin-top: 14px;">Elite branca em cima. Massa de escravos negros embaixo.</p>
+      <p style="margin-top: 12px; font-size: 14px; color: var(--ink-soft); font-style: italic;">Parecido com o Brasil colonial. Não é coincidência.</p>
+    </section>
+
+    <!-- 12 -->
+    <section class="slide">
+      <div class="eyebrow">No meio</div>
+      <p>Pensilvânia, Nova York, Nova Jersey.</p>
+      <p style="margin-top: 12px;">Tinham de tudo um pouco.</p>
+      <p>Diversidade religiosa. Diversidade étnica. Economia mista.</p>
+      <p style="margin-top: 12px;"><strong>Filadélfia</strong>, a maior cidade das colônias, ficava nessa região.</p>
+      <p style="margin-top: 10px; font-size: 14px; color: var(--ink-soft); font-style: italic;">Guarda esse nome. Vai aparecer muito.</p>
+    </section>
+
+    <!-- 13 — alerta histórico -->
+    <section class="slide">
+      <div class="eyebrow">Detalhe importante</div>
+      <p>Essa diferença entre Norte e Sul <strong>não é detalhe</strong>.</p>
+      <p class="big" style="margin-top: 14px;">Vai marcar a história americana toda.</p>
+      <p style="margin-top: 16px;">A Guerra Civil de <strong>1861</strong>, 80 anos depois, vai ser exatamente Norte contra Sul.</p>
+      <p style="margin-top: 10px;">E até hoje, em 2026, divisões eleitorais americanas refletem essa geografia.</p>
+    </section>
+
+    <!-- 14 — o que tinham em comum -->
+    <section class="slide">
+      <p>Mas apesar das diferenças, as treze colônias tinham coisas em comum.</p>
+      <p class="big" style="margin-top: 14px; color: var(--accent);">Quatro, principalmente.</p>
+    </section>
+
+    <!-- 15 — autonomia -->
+    <section class="slide">
+      <span class="stamp">01</span>
+      <h2 style="margin-top: 14px;">Autonomia.</h2>
+      <p>A Inglaterra praticava com elas o que os historiadores chamam de <strong>"negligência salutar"</strong>.</p>
+      <p style="margin-top: 12px; font-family: var(--serif); font-style: italic; font-size: 18px; color: var(--accent);">Tradução: deixava os colonos quase fazerem o que quisessem.</p>
+      <p style="margin-top: 14px;">Cada colônia tinha sua assembleia local. Eleita. Cuidava de impostos, leis, administração.</p>
+      <p style="margin-top: 12px;">O rei mandava um governador, mas ele tinha pouco poder real.</p>
+      <p class="big" style="margin-top: 14px;">Os colonos se acostumaram, ao longo de gerações, a se governar.</p>
+    </section>
+
+    <!-- 16 — economia -->
+    <section class="slide">
+      <span class="stamp">02</span>
+      <h2 style="margin-top: 14px;">Economia próspera.</h2>
+      <p>Comércio com a Inglaterra, com as Antilhas, com a África.</p>
+      <p style="margin-top: 8px;">Construção naval. Pesca. Agricultura.</p>
+      <p class="big" style="margin-top: 14px;">Em termos médios, uma das populações <em>mais ricas</em> do mundo.</p>
+    </section>
+
+    <!-- 17 — educação + iluminismo -->
+    <section class="slide">
+      <span class="stamp">03</span>
+      <h2 style="margin-top: 14px;">Educação alta.</h2>
+      <p>Universidades. Jornais. Panfletos. Sociedades de debate.</p>
+      <p style="margin-top: 12px;">As ideias do Iluminismo chegavam aqui <strong>antes</strong> de circular bem na França.</p>
+      <p style="margin-top: 12px;">Os americanos liam Locke, Montesquieu, Voltaire.</p>
+    </section>
+
+    <!-- 18 — virada genial -->
+    <section class="slide">
+      <p class="big">Pensa nisso.</p>
+      <p class="quote" style="margin-top: 16px;">O Iluminismo, que na França era teoria de salão, na América virou prática política — antes mesmo de virar prática política na própria França.</p>
+    </section>
+
+    <!-- 19 — identidade -->
+    <section class="slide">
+      <span class="stamp">04</span>
+      <h2 style="margin-top: 14px;">Identidade própria.</h2>
+      <p>Eles não eram mais bem ingleses.</p>
+      <p class="big" style="margin-top: 14px;">Eram outra coisa.</p>
+      <p style="margin-top: 10px; font-family: var(--serif); font-style: italic; font-size: 24px; color: var(--accent);">Americanos.</p>
+      <p style="margin-top: 12px; font-size: 14px; color: var(--ink-soft); font-style: italic;">Embora a palavra ainda não tivesse esse peso.</p>
+    </section>
+
+    <!-- 20 — A FAÍSCA -->
+    <section class="slide">
+      <div class="number">02</div>
+      <div class="label" style="margin-top: 8px;">A faísca</div>
+      <h2 style="margin-top: 12px;">Como virou guerra?</h2>
+      <p style="margin-top: 18px;">Tudo começou com uma <strong>guerra anterior</strong>.</p>
+      <div class="illu" style="margin-top: 18px; max-width: 220px;">
+        <svg viewBox="0 0 220 80" class="draw" fill="none" stroke="#B5342B" stroke-width="1.5">
+          <!-- canhão estilizado -->
+          <circle cx="40" cy="50" r="12"/>
+          <circle cx="40" cy="50" r="3" fill="#B5342B"/>
+          <path d="M52 50 L80 50 L80 45 L52 45 Z"/>
+          <path d="M85 47 L100 40 M85 47 L100 47 M85 47 L100 54" stroke-dasharray="2 2"/>
+          <!-- moedas caindo -->
+          <circle cx="140" cy="30" r="6"/>
+          <text x="137" y="34" font-family="Georgia" font-size="9" fill="#B5342B">£</text>
+          <circle cx="160" cy="45" r="6"/>
+          <text x="157" y="49" font-family="Georgia" font-size="9" fill="#B5342B">£</text>
+          <circle cx="180" cy="32" r="6"/>
+          <text x="177" y="36" font-family="Georgia" font-size="9" fill="#B5342B">£</text>
+          <circle cx="195" cy="50" r="6"/>
+          <text x="192" y="54" font-family="Georgia" font-size="9" fill="#B5342B">£</text>
+        </svg>
+      </div>
+    </section>
+
+    <!-- 21 — Guerra dos 7 anos -->
+    <section class="slide">
+      <div class="eyebrow">1756 — 1763</div>
+      <h2>A Guerra dos <em>Sete Anos</em>.</h2>
+      <p style="margin-top: 14px;">Foi uma guerra mundial, na escala da época.</p>
+      <p style="margin-top: 8px;"><strong>Inglaterra contra França</strong>, principalmente, com aliados dos dois lados.</p>
+      <p style="margin-top: 8px;">Lutaram na Europa, na Índia, no Caribe e na América do Norte.</p>
+      <p class="big" style="margin-top: 14px;">A Inglaterra venceu.</p>
+      <p style="margin-top: 8px;">E ganhou territórios imensos. Inclusive todo o Canadá francês.</p>
+    </section>
+
+    <!-- 22 — conta da guerra -->
+    <section class="slide">
+      <p class="big">Mas vencer guerra custa caro.</p>
+      <p style="margin-top: 16px;">A Inglaterra terminou o conflito com <strong>dívida gigantesca</strong>.</p>
+      <p style="margin-top: 14px;">E o governo inglês teve uma ideia que parecia óbvia:</p>
+      <div style="margin-top: 14px; padding: 16px; background: var(--paper); border-radius: 12px; border-left: 3px solid var(--accent);">
+        <p style="font-family: var(--serif); font-style: italic; font-size: 16px;">"As colônias se beneficiaram da guerra. Agora os colonos vão ajudar a pagar a conta."</p>
+      </div>
+    </section>
+
+    <!-- 23 — terremoto -->
+    <section class="slide">
+      <p>Pra você, em 2026, parece razoável.</p>
+      <p class="big" style="margin-top: 14px;">Pros colonos, foi um terremoto.</p>
+      <p style="margin-top: 16px;">Por quê?</p>
+      <p style="margin-top: 8px;">Porque por gerações eles <strong>não pagavam imposto direto</strong> pro Parlamento britânico.</p>
+      <p style="margin-top: 8px;">Pagavam imposto local, votado pelas assembleias deles.</p>
+      <p style="margin-top: 12px;">Agora chegava cobrança de Londres, sem que eles tivessem voto.</p>
+    </section>
+
+    <!-- 24 — slogan -->
+    <section class="slide">
+      <div class="eyebrow">Grito de guerra</div>
+      <p class="quote" style="font-size: 26px;">"No taxation without representation."</p>
+      <p style="margin-top: 16px;">Tradução:</p>
+      <p class="big" style="margin-top: 8px;">Sem voto, sem imposto.</p>
+      <p style="margin-top: 14px;">Se vocês não me dão voz no Parlamento que decide meus impostos, eu não pago.</p>
+    </section>
+
+    <!-- 25 — sequência de leis -->
+    <section class="slide">
+      <div class="eyebrow">Sequência de provocações</div>
+      <p>O Parlamento foi jogando lenha na fogueira.</p>
+      <div style="margin-top: 16px;">
+        <div class="timeline-item">
+          <div class="year">1764</div>
+          <div class="desc"><strong>Lei do Açúcar.</strong> Taxa açúcar e melaço importados.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="year">1765</div>
+          <div class="desc"><strong>Lei do Selo.</strong> Todo papel oficial, contrato, jornal, baralho — selo do governo. Imposto gritante.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="year">1767</div>
+          <div class="desc"><strong>Lei Townshend.</strong> Taxa vidro, chumbo, papel, chá.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 26 — reação -->
+    <section class="slide">
+      <p>Os colonos reagiram em massa.</p>
+      <div style="margin-top: 14px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="padding: 10px 14px; background: var(--paper); border-radius: 8px; font-size: 15px;">Boicotes a produtos ingleses.</div>
+        <div style="padding: 10px 14px; background: var(--paper); border-radius: 8px; font-size: 15px;">Manifestações.</div>
+        <div style="padding: 10px 14px; background: var(--paper); border-radius: 8px; font-size: 15px;">Ataques a funcionários da coroa.</div>
+      </div>
+      <p style="margin-top: 16px;">O Parlamento recuou. Revogou quase tudo.</p>
+      <p style="margin-top: 8px;">Mas manteve o imposto sobre o <strong>chá</strong>.</p>
+      <p style="margin-top: 10px; font-family: var(--serif); font-style: italic; font-size: 18px; color: var(--accent);">Por questão de princípio.</p>
+    </section>
+
+    <!-- 27 — Boston Tea Party -->
+    <section class="slide">
+      <div class="eyebrow">16 de dezembro de 1773</div>
+      <h2>A Festa do Chá de <em>Boston</em>.</h2>
+      <div class="illu" style="margin-top: 20px; max-width: 240px;">
+        <svg viewBox="0 0 240 140" class="draw" fill="none" stroke="#B5342B" stroke-width="1.5">
+          <!-- mar -->
+          <path d="M0 110 Q30 105 60 110 T120 110 T180 110 T240 110"/>
+          <path d="M0 120 Q30 115 60 120 T120 120 T180 120 T240 120"/>
+          <!-- navio -->
+          <path d="M70 90 L170 90 L160 105 L80 105 Z"/>
+          <path d="M120 90 L120 30"/>
+          <path d="M120 35 L155 50 L120 65 Z"/>
+          <path d="M120 55 L150 70 L120 80 Z"/>
+          <!-- caixas caindo -->
+          <rect x="180" y="70" width="12" height="10" transform="rotate(20 186 75)"/>
+          <rect x="195" y="85" width="12" height="10" transform="rotate(-15 201 90)"/>
+          <rect x="210" y="98" width="12" height="10" transform="rotate(30 216 103)"/>
+        </svg>
+      </div>
+      <p>Um grupo de colonos, alguns disfarçados de indígenas, invadiu três navios ingleses no porto.</p>
+      <p style="margin-top: 10px;">Jogou no mar <strong>342 caixas de chá</strong>.</p>
+      <p style="margin-top: 8px; font-size: 14px; color: var(--ink-soft); font-style: italic;">Equivalente, hoje, a uns 2 milhões de dólares.</p>
+    </section>
+
+    <!-- 28 -->
+    <section class="slide">
+      <p>Foi um ato de vandalismo <strong>deliberado</strong>.</p>
+      <p>Simbólico.</p>
+      <p class="big" style="margin-top: 14px;">Calculado pra provocar.</p>
+      <p style="margin-top: 16px;">E provocou.</p>
+    </section>
+
+    <!-- 29 — Leis Intoleráveis -->
+    <section class="slide">
+      <div class="eyebrow">1774</div>
+      <h2>As Leis <em>Intoleráveis</em>.</h2>
+      <p style="margin-top: 14px;">A Inglaterra surtou.</p>
+      <div style="margin-top: 14px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="padding: 10px 14px; background: var(--paper); border-radius: 8px; font-size: 15px;">Fechou o porto de Boston.</div>
+        <div style="padding: 10px 14px; background: var(--paper); border-radius: 8px; font-size: 15px;">Suspendeu o governo local de Massachusetts.</div>
+        <div style="padding: 10px 14px; background: var(--paper); border-radius: 8px; font-size: 15px;">Forçou colonos a hospedar soldados em casa.</div>
+      </div>
+      <p class="big" style="margin-top: 14px;">Um tapa na cara.</p>
+    </section>
+
+    <!-- 30 — união -->
+    <section class="slide">
+      <p>E aí, em vez de se intimidarem…</p>
+      <p class="big" style="margin-top: 14px;">…as colônias se uniram.</p>
+      <p style="margin-top: 16px;">Setembro de 1774. Representantes de 12 das 13 colônias se reúnem em Filadélfia.</p>
+      <p style="margin-top: 10px;">É o <strong>Primeiro Congresso Continental</strong>.</p>
+      <p style="margin-top: 10px;">Mandam carta ao rei pedindo revogação das Leis Intoleráveis.</p>
+      <p class="big" style="margin-top: 14px;">O rei ignorou.</p>
+    </section>
+
+    <!-- 31 — Lexington -->
+    <section class="slide">
+      <div class="eyebrow">Abril de 1775</div>
+      <p>Soldados ingleses tentaram confiscar um depósito de armas dos colonos em <strong>Concord</strong>.</p>
+      <p style="margin-top: 12px;">Encontraram resistência armada em <strong>Lexington</strong>.</p>
+      <div class="illu" style="margin: 18px auto; max-width: 200px;">
+        <svg viewBox="0 0 200 60" class="draw" fill="none" stroke="#B5342B" stroke-width="1.5">
+          <!-- mosquetes cruzados + faísca -->
+          <path d="M30 50 L90 15"/>
+          <path d="M90 15 L88 10 L94 12 Z" fill="#B5342B"/>
+          <path d="M30 15 L90 50"/>
+          <path d="M30 15 L28 10 L34 12 Z" fill="#B5342B"/>
+          <!-- estrelas faísca -->
+          <path d="M60 30 L62 33 L65 33 L62.5 35 L63.5 38 L60 36 L56.5 38 L57.5 35 L55 33 L58 33 Z" fill="#B5342B"/>
+          <circle cx="100" cy="32" r="2" fill="#B5342B"/>
+          <circle cx="115" cy="28" r="1.5" fill="#B5342B"/>
+          <circle cx="125" cy="35" r="1.5" fill="#B5342B"/>
+        </svg>
+      </div>
+      <p class="big">Primeiros tiros. Primeiras mortes.</p>
+      <p style="margin-top: 10px; font-family: var(--serif); font-style: italic; font-size: 18px; color: var(--accent);">A guerra tinha começado.</p>
+    </section>
+
+    <!-- 32 — Washington -->
+    <section class="slide">
+      <div class="eyebrow">Maio de 1775</div>
+      <p>Reúne-se o <strong>Segundo Congresso Continental</strong>. Já em clima de guerra.</p>
+      <p style="margin-top: 12px;">Criam o Exército Continental.</p>
+      <p style="margin-top: 12px;">E escolhem pra comandar um fazendeiro virginiano de 43 anos, com experiência militar.</p>
+      <div class="illu" style="margin: 16px auto; max-width: 100px;">
+        <svg viewBox="0 0 100 120" class="draw" fill="none" stroke="#B5342B" stroke-width="1.5">
+          <!-- silhueta com peruca -->
+          <circle cx="50" cy="40" r="18"/>
+          <path d="M32 35 Q30 25 50 22 Q70 25 68 35"/>
+          <path d="M28 45 Q22 50 25 60"/>
+          <path d="M72 45 Q78 50 75 60"/>
+          <path d="M35 58 L65 58 L72 100 L28 100 Z"/>
+          <path d="M50 58 L50 100"/>
+        </svg>
+      </div>
+      <p class="big" style="text-align: center;">George Washington.</p>
+    </section>
+
+    <!-- 33 — 4 de julho -->
+    <section class="slide">
+      <div class="eyebrow">4 de julho de 1776</div>
+      <h2>A Declaração de <em>Independência</em>.</h2>
+      <div class="illu" style="margin-top: 20px; max-width: 200px;">
+        <svg viewBox="0 0 200 140" class="draw" fill="none" stroke="#B5342B" stroke-width="1.5">
+          <!-- pergaminho -->
+          <path d="M30 20 Q25 15 30 10 L170 10 Q175 15 170 20 L170 110 Q175 115 170 120 L30 120 Q25 115 30 110 Z"/>
+          <!-- linhas de texto -->
+          <path d="M50 35 L150 35"/>
+          <path d="M50 45 L140 45"/>
+          <path d="M50 55 L150 55"/>
+          <path d="M50 65 L130 65"/>
+          <path d="M50 75 L145 75"/>
+          <path d="M50 85 L120 85"/>
+          <!-- assinatura -->
+          <path d="M55 100 Q65 95 75 100 Q85 105 95 100"/>
+        </svg>
+      </div>
+      <p>Aprovada pelo Congresso Continental.</p>
+      <p style="margin-top: 10px;">Redigida principalmente por um virginiano de 33 anos. Fazendeiro. Advogado. Leitor obsessivo de Locke.</p>
+      <p class="big" style="margin-top: 12px;">Thomas Jefferson.</p>
+    </section>
+
+    <!-- 34 — frase central -->
+    <section class="slide">
+      <div class="eyebrow">A frase que mudou o ocidente</div>
+      <p class="quote" style="font-size: 17px; line-height: 1.4;">"Consideramos estas verdades como autoevidentes: que todos os homens são criados iguais, que são dotados pelo seu Criador de certos direitos inalienáveis, entre eles a vida, a liberdade e a busca da felicidade."</p>
+      <p style="margin-top: 14px;">Para. Lê de novo. Lentamente.</p>
+    </section>
+
+    <!-- 35 -->
+    <section class="slide">
+      <p>Continua:</p>
+      <p class="quote" style="margin-top: 14px; font-size: 16px;">"Que para garantir esses direitos, governos são instituídos entre os homens, derivando seus justos poderes do consentimento dos governados."</p>
+      <p style="margin-top: 14px;">Isso é Locke. <strong>Palavra por palavra</strong>. Transformado em ato fundador de um país.</p>
+      <p class="big" style="margin-top: 14px;">O Iluminismo virando Estado.</p>
+    </section>
+
+    <!-- 36 — 3 partes da declaração -->
+    <section class="slide">
+      <div class="eyebrow">A Declaração tem 3 partes</div>
+      <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 10px;">
+        <div class="card-soft">
+          <div class="label" style="margin-bottom: 4px;">01 · Justificativa filosófica</div>
+          <p style="font-size: 14px;">A frase de cima. Direitos naturais, contrato social, soberania popular.</p>
+        </div>
+        <div class="card-soft">
+          <div class="label" style="margin-bottom: 4px;">02 · Lista de queixas</div>
+          <p style="font-size: 14px;">27 queixas específicas contra o rei Jorge III. Justificativa concreta.</p>
+        </div>
+        <div class="card-soft">
+          <div class="label" style="margin-bottom: 4px;">03 · Ato formal</div>
+          <p style="font-size: 14px;">"Estas colônias são, e por direito devem ser, Estados livres e independentes."</p>
+        </div>
+      </div>
+      <p style="margin-top: 14px; font-family: var(--serif); font-style: italic; font-size: 18px; color: var(--accent);">Tá feito. No papel.</p>
+    </section>
+
+    <!-- 37 — guerra real -->
+    <section class="slide">
+      <p>No papel, lindo.</p>
+      <p class="big" style="margin-top: 14px;">No campo de batalha, foi outra história.</p>
+      <p style="margin-top: 16px;">A guerra durou <strong>8 anos</strong>. De 1775 a 1783.</p>
+      <p style="margin-top: 14px;">Os ingleses tinham o exército mais profissional do mundo.</p>
+      <p style="margin-top: 10px;">Os colonos tinham milícia mal treinada, mal equipada, e um general que aprendeu lutando.</p>
+    </section>
+
+    <!-- 38 — 3 vantagens -->
+    <section class="slide">
+      <p>Mas os colonos tinham <strong>três vantagens</strong>.</p>
+      <div style="margin-top: 16px; display: flex; flex-direction: column; gap: 10px;">
+        <div style="padding: 14px; background: var(--paper); border-radius: 12px; border-left: 3px solid var(--accent);">
+          <div class="label">01</div>
+          <p style="font-family: var(--serif); font-size: 16px; margin-top: 4px;">Conheciam o terreno.</p>
+        </div>
+        <div style="padding: 14px; background: var(--paper); border-radius: 12px; border-left: 3px solid var(--accent);">
+          <div class="label">02</div>
+          <p style="font-family: var(--serif); font-size: 16px; margin-top: 4px;">Lutavam por uma causa.</p>
+        </div>
+        <div style="padding: 14px; background: var(--paper); border-radius: 12px; border-left: 3px solid var(--accent);">
+          <div class="label">03 · crucial</div>
+          <p style="font-family: var(--serif); font-size: 16px; margin-top: 4px;">Apoio da França.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 39 — França entra -->
+    <section class="slide">
+      <p>Lembra que eu falei na aula passada?</p>
+      <p style="margin-top: 12px;">A França financiou a Revolução Americana <strong>pra prejudicar a Inglaterra</strong>.</p>
+      <p style="margin-top: 10px;">E isso quebrou o tesouro francês — e ajudou a desencadear a própria Revolução Francesa.</p>
+      <p style="margin-top: 14px;">A partir de 1778, depois da vitória em <strong>Saratoga</strong>, a França entrou na guerra.</p>
+      <p style="margin-top: 8px;">Mandou dinheiro, marinha, soldados.</p>
+      <p style="margin-top: 8px;">Espanha e Holanda também entraram.</p>
+    </section>
+
+    <!-- 40 — Yorktown -->
+    <section class="slide">
+      <div class="eyebrow">1781</div>
+      <p>Rendição inglesa em <strong>Yorktown</strong>.</p>
+      <div class="illu" style="margin: 18px auto; max-width: 180px;">
+        <svg viewBox="0 0 180 80" class="draw" fill="none" stroke="#B5342B" stroke-width="1.5">
+          <!-- bandeira branca -->
+          <path d="M40 70 L40 15"/>
+          <path d="M40 15 L100 15 L95 30 L100 45 L40 45 Z"/>
+        </svg>
+      </div>
+      <div class="eyebrow">1783</div>
+      <p><strong>Tratado de Paris.</strong> A Inglaterra reconhece formalmente a independência dos Estados Unidos.</p>
+      <p class="big" style="margin-top: 14px;">Os EUA existiam.</p>
+      <p style="margin-top: 8px; font-family: var(--serif); font-style: italic; font-size: 18px; color: var(--accent);">No papel.</p>
+    </section>
+
+    <!-- 41 — virada -->
+    <section class="slide">
+      <p class="big">Agora vem a parte mais interessante.</p>
+      <p style="margin-top: 16px;">E mais subestimada.</p>
+      <p style="margin-top: 14px;">Ganhar a guerra é só <strong>metade</strong> do trabalho.</p>
+      <p class="big" style="margin-top: 14px;">A outra metade — e muitas vezes a mais difícil — é construir um país que funcione.</p>
+    </section>
+
+    <!-- 42 — Artigos da Confederação -->
+    <section class="slide">
+      <div class="eyebrow">1777 · Primeira tentativa</div>
+      <h2>Os <em>Artigos</em> da Confederação.</h2>
+      <p style="margin-top: 14px;">Criava uma união entre os 13 estados.</p>
+      <p style="margin-top: 8px;">Mas uma união <strong>fraquíssima</strong>.</p>
+      <div style="margin-top: 14px; padding: 14px; background: var(--paper); border-radius: 12px; border-left: 3px solid var(--accent);">
+        <p style="font-size: 14px;">O Congresso podia declarar guerra e assinar tratado.</p>
+        <p style="font-size: 14px; margin-top: 6px;">Mas <strong>não</strong> podia cobrar imposto.</p>
+        <p style="font-size: 14px; margin-top: 6px;">Não podia regular comércio entre estados.</p>
+        <p style="font-size: 14px; margin-top: 6px;">Não podia manter exército permanente.</p>
+      </div>
+      <p style="margin-top: 12px; font-family: var(--serif); font-style: italic; font-size: 16px; color: var(--accent);">Uma confederação de quase-países.</p>
+    </section>
+
+    <!-- 43 — não funcionou -->
+    <section class="slide">
+      <p class="big">Não funcionou.</p>
+      <p style="margin-top: 16px;">Os estados brigavam por fronteira, comércio, moeda.</p>
+      <p style="margin-top: 8px;">Cada um emitia sua própria moeda.</p>
+      <p style="margin-top: 8px; font-style: italic; color: var(--ink-soft);">Quem queria negociar entre Boston e Charleston trocava dinheiro três vezes no caminho.</p>
+      <p style="margin-top: 12px;">O governo central não conseguia pagar nem os soldados que tinham lutado a guerra.</p>
+    </section>
+
+    <!-- 44 — Rebelião de Shays -->
+    <section class="slide">
+      <div class="eyebrow">1786</div>
+      <p>Em Massachusetts, uma <strong>rebelião de fazendeiros endividados</strong>.</p>
+      <p style="margin-top: 10px;">Ficou conhecida como <strong>Rebelião de Shays</strong>.</p>
+      <p class="big" style="margin-top: 14px;">O governo confederado nem conseguia manter ordem interna.</p>
+      <p style="margin-top: 14px;">A elite política americana entrou em pânico.</p>
+    </section>
+
+    <!-- 45 — Filadélfia 1787 -->
+    <section class="slide">
+      <div class="number">03</div>
+      <div class="label" style="margin-top: 8px;">1787</div>
+      <h2 style="margin-top: 12px;">A Convenção da <em>Filadélfia</em>.</h2>
+      <div class="illu" style="margin-top: 20px; max-width: 240px;">
+        <svg viewBox="0 0 240 120" class="draw" fill="none" stroke="#B5342B" stroke-width="1.5">
+          <!-- prédio Independence Hall estilizado -->
+          <rect x="60" y="60" width="120" height="50"/>
+          <path d="M55 60 L120 30 L185 60"/>
+          <rect x="115" y="20" width="10" height="20"/>
+          <rect x="113" y="10" width="14" height="14"/>
+          <!-- portas e janelas -->
+          <rect x="75" y="75" width="14" height="20"/>
+          <rect x="100" y="75" width="14" height="20"/>
+          <rect x="125" y="75" width="14" height="20"/>
+          <rect x="150" y="75" width="14" height="20"/>
+          <path d="M113 80 L113 110"/>
+        </svg>
+      </div>
+      <p>55 delegados dos 13 estados.</p>
+      <p>Em uma sala fechada. Com calor de verão. Em segredo.</p>
+      <p class="big" style="margin-top: 12px;">Durante 4 meses, debateram, brigaram, negociaram.</p>
+    </section>
+
+    <!-- 46 — engenharia política -->
+    <section class="slide">
+      <p class="quote">Essa Convenção é o evento de engenharia política mais bem-sucedido da história.</p>
+      <p style="margin-top: 16px;">O que saiu dali tá funcionando até hoje.</p>
+      <p style="margin-top: 8px;"><strong>240 anos depois.</strong></p>
+      <p style="margin-top: 14px;">Em um país que passou por guerra civil, crise econômica gigante, duas guerras mundiais, revoluções tecnológicas.</p>
+      <p class="big" style="margin-top: 14px;">E continua funcionando.</p>
+    </section>
+
+    <!-- 47 — pais fundadores -->
+    <section class="slide">
+      <div class="eyebrow">Quem tava na sala</div>
+      <h2>Os <em>Founding Fathers</em>.</h2>
+      <div style="margin-top: 14px; display: flex; flex-direction: column; gap: 10px;">
+        <div class="card-soft">
+          <div class="label" style="margin-bottom: 4px;">James Madison</div>
+          <p style="font-size: 14px;">Baixinho, intelectual. <em>"Pai da Constituição".</em></p>
+        </div>
+        <div class="card-soft">
+          <div class="label" style="margin-bottom: 4px;">Alexander Hamilton</div>
+          <p style="font-size: 14px;">Brilhante, ambicioso. Queria governo central forte.</p>
+        </div>
+        <div class="card-soft">
+          <div class="label" style="margin-bottom: 4px;">Benjamin Franklin</div>
+          <p style="font-size: 14px;">81 anos. Sábio, cético, mediador.</p>
+        </div>
+        <div class="card-soft">
+          <div class="label" style="margin-bottom: 4px;">George Washington</div>
+          <p style="font-size: 14px;">Presidindo. Calado. Respeitado por todos.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 48 — desafio -->
+    <section class="slide">
+      <p>O desafio era enorme.</p>
+      <div style="margin-top: 14px; display: flex; flex-direction: column; gap: 10px;">
+        <div style="padding: 12px 14px; background: var(--paper); border-radius: 10px; font-family: var(--serif); font-style: italic; font-size: 15px;">Como criar governo forte o suficiente pra funcionar…</div>
+        <div style="padding: 12px 14px; background: var(--paper); border-radius: 10px; font-family: var(--serif); font-style: italic; font-size: 15px;">…mas fraco o suficiente pra não virar tirania?</div>
+        <div style="padding: 12px 14px; background: var(--paper); border-radius: 10px; font-family: var(--serif); font-style: italic; font-size: 15px;">Como unir 13 estados ciumentos sem nenhum se sentir engolido?</div>
+      </div>
+      <p class="big" style="margin-top: 14px;">A solução foi um conjunto de invenções políticas brilhantes.</p>
+    </section>
+
+    <!-- 49 — invenção 1: Federalismo -->
+    <section class="slide">
+      <span class="stamp">Invenção 01</span>
+      <h2 style="margin-top: 12px;">Federalismo.</h2>
+      <div class="illu" style="margin: 18px auto; max-width: 200px;">
+        <svg viewBox="0 0 200 100" class="draw" fill="none" stroke="#B5342B" stroke-width="1.5">
+          <!-- pirâmide em camadas -->
+          <path d="M70 20 L130 20 L140 40 L60 40 Z"/>
+          <text x="85" y="33" font-family="Georgia" font-size="10" fill="#B5342B" font-style="italic">União</text>
+          <path d="M50 50 L150 50 L160 70 L40 70 Z"/>
+          <text x="78" y="63" font-family="Georgia" font-size="10" fill="#B5342B" font-style="italic">Estados</text>
+          <path d="M30 80 L170 80 L180 95 L20 95 Z"/>
+          <text x="72" y="91" font-family="Georgia" font-size="10" fill="#B5342B" font-style="italic">Municípios</text>
+        </svg>
+      </div>
+      <p>Estado em camadas. Governo central com poderes específicos. Estaduais com todo o resto.</p>
+      <p style="margin-top: 12px;">O Brasil copiou. A Alemanha copiou. A Índia copiou.</p>
+      <p class="big" style="margin-top: 12px;">Virou referência mundial.</p>
+    </section>
+
+    <!-- 50 — invenção 2: separação de poderes -->
+    <section class="slide">
+      <span class="stamp">Invenção 02</span>
+      <h2 style="margin-top: 12px;">Separação de poderes <em>radical</em>.</h2>
+      <div class="illu" style="margin: 16px auto; max-width: 220px;">
+        <svg viewBox="0 0 220 100" class="draw" fill="none" stroke="#B5342B" stroke-width="1.5">
+          <!-- 3 colunas conectadas -->
+          <rect x="20" y="30" width="40" height="60"/>
+          <text x="22" y="105" font-family="Georgia" font-size="9" fill="#4A4640">Executivo</text>
+          <rect x="90" y="30" width="40" height="60"/>
+          <text x="88" y="105" font-family="Georgia" font-size="9" fill="#4A4640">Legislativo</text>
+          <rect x="160" y="30" width="40" height="60"/>
+          <text x="160" y="105" font-family="Georgia" font-size="9" fill="#4A4640">Judiciário</text>
+          <!-- setas de freio -->
+          <path d="M60 50 L90 50" stroke-dasharray="2 2"/>
+          <path d="M85 47 L90 50 L85 53"/>
+          <path d="M90 70 L60 70" stroke-dasharray="2 2"/>
+          <path d="M65 67 L60 70 L65 73"/>
+          <path d="M130 50 L160 50" stroke-dasharray="2 2"/>
+          <path d="M155 47 L160 50 L155 53"/>
+          <path d="M160 70 L130 70" stroke-dasharray="2 2"/>
+          <path d="M135 67 L130 70 L135 73"/>
+        </svg>
+      </div>
+      <p>Montesquieu propôs três poderes. Os americanos levaram ao extremo.</p>
+      <p style="margin-top: 10px;">Inventaram os <strong>freios e contrapesos</strong>.</p>
+    </section>
+
+    <!-- 51 — exemplos de freios -->
+    <section class="slide">
+      <div class="eyebrow">Freios e contrapesos</div>
+      <p>Cada poder pode bloquear o outro.</p>
+      <div style="margin-top: 14px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="padding: 10px 14px; background: var(--paper); border-radius: 8px; font-size: 14px;">Presidente veta lei do Congresso.</div>
+        <div style="padding: 10px 14px; background: var(--paper); border-radius: 8px; font-size: 14px;">Congresso pode derrubar o veto.</div>
+        <div style="padding: 10px 14px; background: var(--paper); border-radius: 8px; font-size: 14px;">Suprema Corte declara lei inconstitucional.</div>
+        <div style="padding: 10px 14px; background: var(--paper); border-radius: 8px; font-size: 14px;">Presidente nomeia juízes — Senado aprova.</div>
+      </div>
+      <p style="margin-top: 14px;">É lento. É frustrante. E é exatamente por isso que <strong>funciona</strong>.</p>
+      <p class="big" style="margin-top: 12px;">Torna a tirania quase impossível.</p>
+    </section>
+
+    <!-- 52 — invenção 3: bicameralismo -->
+    <section class="slide">
+      <span class="stamp">Invenção 03</span>
+      <h2 style="margin-top: 12px;">Bicameralismo.</h2>
+      <p style="margin-top: 12px;">Congresso com duas câmaras. Equilibrando estados grandes e pequenos.</p>
+      <div class="compare">
+        <div class="a">
+          <div class="head">Câmara dos Reps</div>
+          <p style="font-size: 13px;">Cadeiras proporcionais à população. Estado grande, mais voz.</p>
+        </div>
+        <div class="b">
+          <div class="head">Senado</div>
+          <p style="font-size: 13px;">2 senadores por estado. Pequeno tem o mesmo voto que grande.</p>
+        </div>
+      </div>
+      <p style="margin-top: 14px; font-family: var(--serif); font-style: italic; font-size: 16px; color: var(--accent);">"Grande Compromisso".</p>
+      <p style="margin-top: 8px;">Foi o que permitiu Delaware aceitar entrar na União com a Virgínia.</p>
+    </section>
+
+    <!-- 53 — invenção 4: presidente -->
+    <section class="slide">
+      <span class="stamp">Invenção 04</span>
+      <h2 style="margin-top: 12px;">Presidente eleito, mandato limitado.</h2>
+      <p style="margin-top: 14px;">Diferente da França — que oscilou entre rei, república e imperador — os americanos criaram a figura do <strong>presidente</strong>.</p>
+      <p style="margin-top: 10px;">Chefe de Estado e de governo. Eleito. Mandato fixo. Sujeito a controle. Pode ser impeachmentado.</p>
+    </section>
+
+    <!-- 54 — Washington abrindo mão -->
+    <section class="slide">
+      <p>E aqui acontece uma das coisas mais importantes da história política.</p>
+      <p style="margin-top: 14px;">George Washington, o primeiro presidente, cumpriu <strong>dois mandatos</strong>.</p>
+      <p style="margin-top: 10px;">Em 1797, voluntariamente, abriu mão do cargo.</p>
+      <p class="big" style="margin-top: 14px;">Podia ter virado rei vitalício se quisesse.</p>
+      <p style="margin-top: 8px; font-family: var(--serif); font-style: italic; font-size: 18px; color: var(--accent);">Escolheu não virar.</p>
+      <p style="margin-top: 12px;">Esse ato fundou a tradição de <strong>transição pacífica de poder</strong>. Que dura até hoje.</p>
+    </section>
+
+    <!-- 55 — invenção 5: Constituição escrita -->
+    <section class="slide">
+      <span class="stamp">Invenção 05</span>
+      <h2 style="margin-top: 12px;">Constituição escrita.</h2>
+      <p style="margin-top: 14px;">Documento curto. Claro. Escrito. Supremo.</p>
+      <p style="margin-top: 10px;">Com mecanismo de <strong>emenda</strong>: difícil, mas possível.</p>
+    </section>
+
+    <!-- 56 — Bill of Rights -->
+    <section class="slide">
+      <div class="eyebrow">1791</div>
+      <h2>Bill of Rights.</h2>
+      <p style="margin-top: 12px;">As <strong>10 primeiras emendas</strong>. Carta de Direitos.</p>
+      <div style="margin-top: 14px; display: flex; flex-direction: column; gap: 6px;">
+        <div style="padding: 8px 12px; background: var(--paper); border-radius: 8px; font-size: 14px;">Liberdade de expressão.</div>
+        <div style="padding: 8px 12px; background: var(--paper); border-radius: 8px; font-size: 14px;">Religião e imprensa.</div>
+        <div style="padding: 8px 12px; background: var(--paper); border-radius: 8px; font-size: 14px;">Direito de portar arma.</div>
+        <div style="padding: 8px 12px; background: var(--paper); border-radius: 8px; font-size: 14px;">Proteção contra busca arbitrária.</div>
+        <div style="padding: 8px 12px; background: var(--paper); border-radius: 8px; font-size: 14px;">Direito a julgamento justo.</div>
+      </div>
+      <p style="margin-top: 12px; font-family: var(--serif); font-style: italic; font-size: 16px; color: var(--accent);">Uma das listas de direitos mais influentes da história.</p>
+    </section>
+
+    <!-- 57 — A CHAGA -->
+    <section class="slide">
+      <div class="eyebrow">Mas tem um problema</div>
+      <h2>A Constituição tinha um <em>defeito gigantesco</em>.</h2>
+      <p style="margin-top: 16px;">Manteve a <strong>escravidão</strong>.</p>
+    </section>
+
+    <!-- 58 -->
+    <section class="slide">
+      <p>Os pais fundadores — vários deles donos de escravos, inclusive Jefferson e Washington — sabiam que era contradição absurda.</p>
+      <p class="quote" style="margin-top: 14px; font-size: 17px;">Escrever "todos os homens são criados iguais" e manter milhões escravizados.</p>
+      <p style="margin-top: 14px;">Mas não conseguiram resolver.</p>
+    </section>
+
+    <!-- 59 — três quintos -->
+    <section class="slide">
+      <p>Os estados do Sul ameaçaram não entrar na União se a escravidão fosse abolida.</p>
+      <p style="margin-top: 12px;">A solução foi um <strong>compromisso vergonhoso</strong>:</p>
+      <div style="margin-top: 14px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="padding: 12px 14px; background: var(--paper); border-radius: 10px; font-size: 14px;">Manter a escravidão.</div>
+        <div style="padding: 12px 14px; background: var(--paper); border-radius: 10px; font-size: 14px;">Contar cada escravo como <strong>"três quintos"</strong> de uma pessoa.</div>
+        <div style="padding: 12px 14px; background: var(--paper); border-radius: 10px; font-size: 14px;">Postergar a discussão.</div>
+      </div>
+      <p class="big" style="margin-top: 14px;">Uma chaga aberta no nascimento dos EUA.</p>
+    </section>
+
+    <!-- 60 — guerra civil -->
+    <section class="slide">
+      <p>Essa contradição original ia cobrar.</p>
+      <p style="margin-top: 14px;">E cobrou. <strong>80 anos depois</strong>, na Guerra Civil.</p>
+      <div style="text-align: center; margin: 20px 0;">
+        <div class="number" style="font-size: 64px;">600 mil</div>
+        <p style="margin-top: 8px; font-size: 14px; color: var(--ink-soft);">mortos</p>
+      </div>
+      <p>Mais americanos do que morreram em todas as outras guerras americanas somadas.</p>
+    </section>
+
+    <!-- 61 — sistema robusto -->
+    <section class="slide">
+      <p>Mas, com defeitos e tudo…</p>
+      <p class="big" style="margin-top: 12px;">…o sistema se mostrou robusto.</p>
+      <p style="margin-top: 14px;">Capaz de absorver mudança através das emendas:</p>
+      <div style="margin-top: 14px;">
+        <div class="timeline-item">
+          <div class="year">1865</div>
+          <div class="desc">13ª emenda. Abolição da escravidão.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="year">1868</div>
+          <div class="desc">14ª. Cidadania aos negros.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="year">1920</div>
+          <div class="desc">19ª. Voto às mulheres.</div>
+        </div>
+      </div>
+      <p style="margin-top: 10px; font-size: 14px; color: var(--ink-soft);">Hoje, 27 emendas no total.</p>
+    </section>
+
+    <!-- 62 — COMPARAÇÃO FRANÇA -->
+    <section class="slide">
+      <div class="number">04</div>
+      <div class="label" style="margin-top: 8px;">Aula estratégica</div>
+      <h2 style="margin-top: 12px;">Americana <em>vs</em> Francesa.</h2>
+      <p style="margin-top: 16px;">Mesma base ideológica. Mesmo Iluminismo. Mesmos autores.</p>
+      <p class="big" style="margin-top: 14px;">Resultados muito diferentes. Por quê?</p>
+    </section>
+
+    <!-- 63 — diferença 1 -->
+    <section class="slide">
+      <span class="stamp">Diferença 01</span>
+      <h2 style="margin-top: 12px;">Experiência prévia.</h2>
+      <div class="compare">
+        <div class="b">
+          <div class="head">EUA</div>
+          <p style="font-size: 13px;">150 anos de assembleias coloniais elegendo, debatendo, votando.</p>
+        </div>
+        <div class="a">
+          <div class="head">França</div>
+          <p style="font-size: 13px;">Saiu direto do absolutismo. Sem prática nenhuma.</p>
+        </div>
+      </div>
+      <p style="margin-top: 16px;">Os americanos já <strong>sabiam como</strong> criar país.</p>
+      <p>Os franceses foram improvisando. E o improviso virou caos.</p>
+    </section>
+
+    <!-- 64 — lição 1 -->
+    <section class="slide">
+      <div class="eyebrow">Lição estratégica</div>
+      <p class="quote">Instituições não se criam do nada. Elas precisam de tempo, de prática, de cultura.</p>
+      <p style="margin-top: 14px;">Vale pra país. Vale pra empresa. Vale pra setor.</p>
+      <p style="margin-top: 10px;">Lugar sem prática nenhuma de autogestão vai oscilar mais ao tentar se autogerir.</p>
+    </section>
+
+    <!-- 65 — diferença 2 -->
+    <section class="slide">
+      <span class="stamp">Diferença 02</span>
+      <h2 style="margin-top: 12px;">Elite mais homogênea.</h2>
+      <div class="compare">
+        <div class="b">
+          <div class="head">EUA</div>
+          <p style="font-size: 13px;">Burguesia, fazendeiros, advogados. <em>Incluídos médios</em> querendo mais.</p>
+        </div>
+        <div class="a">
+          <div class="head">França</div>
+          <p style="font-size: 13px;">Nobreza rica, povo faminto. Polarização extrema.</p>
+        </div>
+      </div>
+      <p style="margin-top: 14px;">Por isso a americana foi mais cirúrgica.</p>
+      <p style="margin-top: 8px;">A francesa não tinha como ser cirurgia.</p>
+    </section>
+
+    <!-- 66 — lição 2 -->
+    <section class="slide">
+      <div class="eyebrow">Lição</div>
+      <p class="quote">Revolução em sociedade muito desigual tende a ser muito mais violenta do que em sociedade mais nivelada.</p>
+      <p style="margin-top: 14px;">Vale pra país. Pra empresa em crise. Pra qualquer estrutura humana sob tensão.</p>
+    </section>
+
+    <!-- 67 — diferença 3 -->
+    <section class="slide">
+      <span class="stamp">Diferença 03</span>
+      <h2 style="margin-top: 12px;">Líderes que souberam <em>parar</em>.</h2>
+      <p style="margin-top: 14px;">Washington abrindo mão. Jefferson, Madison, Hamilton brigando entre si <strong>mas concordando em construir instituições</strong>.</p>
+      <p style="margin-top: 14px;">Os franceses tiveram brilhantes também. Robespierre, Danton, Mirabeau.</p>
+      <p style="margin-top: 8px;">Mas tiveram menos disposição pra parar.</p>
+      <p style="margin-top: 10px; font-family: var(--serif); font-style: italic; font-size: 16px; color: var(--accent);">Cada fase devorava a anterior. E no fim, Napoleão devorou todos.</p>
+    </section>
+
+    <!-- 68 — lição 3 -->
+    <section class="slide">
+      <div class="eyebrow">Lição (importante)</div>
+      <p class="quote">A qualidade que mais conta nem sempre é radicalidade. Muitas vezes é saber quando parar.</p>
+      <p class="big" style="margin-top: 14px;">Quem ataca bem, vence batalha.</p>
+      <p class="big" style="margin-top: 6px;">Quem consolida bem, ganha guerra.</p>
+    </section>
+
+    <!-- 69 — diferença 4 -->
+    <section class="slide">
+      <span class="stamp">Diferença 04</span>
+      <h2 style="margin-top: 12px;">Geografia.</h2>
+      <p style="margin-top: 14px;">Os EUA estavam <strong>isolados</strong>. Atlântico no meio.</p>
+      <p style="margin-top: 8px;">Depois da independência, ninguém invadiu. Tiveram tempo, em paz, pra construir.</p>
+      <p style="margin-top: 14px;">A França estava no centro da Europa.</p>
+      <p style="margin-top: 8px;">Foi invadida por todas as monarquias vizinhas.</p>
+      <p style="margin-top: 8px;">Isso radicalizou tudo. Alimentou o Terror. Abriu caminho pro Napoleão.</p>
+    </section>
+
+    <!-- 70 — lição 4 -->
+    <section class="slide">
+      <div class="eyebrow">Lição</div>
+      <p class="quote">Contexto geopolítico importa, e muito.</p>
+      <p style="margin-top: 14px;">Negócio em mercado isolado tem espaço pra errar e ajustar.</p>
+      <p style="margin-top: 8px;">Negócio em mercado supercompetitivo é forçado a decisão extrema.</p>
+      <p style="margin-top: 12px; font-family: var(--serif); font-style: italic; font-size: 16px; color: var(--accent);">E geralmente acaba comprado, falindo, ou apostando alto demais.</p>
+    </section>
+
+    <!-- 71 — gestão -->
+    <section class="slide">
+      <p>Tô falando de Revolução.</p>
+      <p>Mas tô falando de <strong>gestão</strong> também.</p>
+      <p>Tô falando de história.</p>
+      <p>Mas tô falando de <strong>estratégia</strong>.</p>
+      <p class="big" style="margin-top: 14px;">Porque os padrões são os mesmos.</p>
+    </section>
+
+    <!-- 72 — LEGADO -->
+    <section class="slide">
+      <div class="number">05</div>
+      <div class="label" style="margin-top: 8px;">Legado</div>
+      <h2 style="margin-top: 12px;">O que ficou pro mundo.</h2>
+      <p style="margin-top: 18px;">Seis coisas que viraram <strong>padrão global</strong>.</p>
+    </section>
+
+    <!-- 73 — legados grid -->
+    <section class="slide">
+      <div class="eyebrow">Os 6 legados</div>
+      <div class="pillar-grid" style="grid-template-columns: 1fr 1fr;">
+        <div class="pillar">
+          <svg viewBox="0 0 36 36" fill="none" stroke="#B5342B" stroke-width="1.5"><path d="M6 30 L18 8 L30 30 Z"/></svg>
+          <div class="name">Estado iluminista</div>
+        </div>
+        <div class="pillar">
+          <svg viewBox="0 0 36 36" fill="none" stroke="#B5342B" stroke-width="1.5"><rect x="8" y="6" width="20" height="24" rx="2"/><path d="M12 13 L24 13 M12 18 L24 18 M12 23 L20 23"/></svg>
+          <div class="name">Constituição escrita</div>
+        </div>
+        <div class="pillar">
+          <svg viewBox="0 0 36 36" fill="none" stroke="#B5342B" stroke-width="1.5"><path d="M12 8 L24 8 L26 14 L10 14 Z"/><path d="M8 16 L28 16 L30 22 L6 22 Z"/><path d="M4 24 L32 24 L34 30 L2 30 Z"/></svg>
+          <div class="name">Federalismo</div>
+        </div>
+        <div class="pillar">
+          <svg viewBox="0 0 36 36" fill="none" stroke="#B5342B" stroke-width="1.5"><circle cx="18" cy="14" r="6"/><path d="M8 30 Q8 22 18 22 Q28 22 28 30"/></svg>
+          <div class="name">Presidencialismo</div>
+        </div>
+        <div class="pillar">
+          <svg viewBox="0 0 36 36" fill="none" stroke="#B5342B" stroke-width="1.5"><path d="M18 5 L21 13 L29 13 L23 18 L25 26 L18 22 L11 26 L13 18 L7 13 L15 13 Z"/></svg>
+          <div class="name">Inspiração global</div>
+        </div>
+        <div class="pillar">
+          <svg viewBox="0 0 36 36" fill="none" stroke="#B5342B" stroke-width="1.5"><circle cx="18" cy="18" r="11"/><path d="M14 18 L17 21 L23 14"/></svg>
+          <div class="name">Direitos individuais</div>
+        </div>
+      </div>
+    </function_calls>
+    </section>
+
+    <!-- 74 — primeiro Estado iluminista -->
+    <section class="slide">
+      <span class="stamp">Legado 01</span>
+      <h2 style="margin-top: 12px;">O primeiro Estado moderno iluminista.</h2>
+      <p style="margin-top: 14px;">Os EUA foram o primeiro país do mundo a ser fundado, literalmente do zero, com base em uma <strong>teoria filosófica</strong>.</p>
+      <p style="margin-top: 12px;">Não é um país que evoluiu de tribo, ou reino antigo.</p>
+      <p class="big" style="margin-top: 14px;">É um país que foi <em>inventado, por escrito</em>, em um documento.</p>
+      <p style="margin-top: 10px; font-size: 14px; color: var(--ink-soft); font-style: italic;">Isso é único na história.</p>
+    </section>
+
+    <!-- 75 — Constituição codificada -->
+    <section class="slide">
+      <span class="stamp">Legado 02</span>
+      <h2 style="margin-top: 12px;">A Constituição codificada.</h2>
+      <p style="margin-top: 14px;">Antes dos EUA, países tinham conjuntos de leis, costumes, cartas.</p>
+      <p style="margin-top: 10px;">Os EUA foram o primeiro a colocar tudo em um <strong>documento único, escrito, supremo</strong>.</p>
+      <p style="margin-top: 14px;">Esse modelo virou padrão mundial.</p>
+      <p style="margin-top: 8px; font-family: var(--serif); font-style: italic; font-size: 16px; color: var(--accent);">Inclusive o Brasil.</p>
+    </section>
+
+    <!-- 76 — inspiração global -->
+    <section class="slide">
+      <span class="stamp">Legado 03</span>
+      <h2 style="margin-top: 12px;">Inspiração pras outras revoluções.</h2>
+      <div style="margin-top: 14px;">
+        <div class="timeline-item">
+          <div class="year">1776</div>
+          <div class="desc">Independência americana.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="year">1789</div>
+          <div class="desc">Revolução Francesa.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="year">1789</div>
+          <div class="desc"><strong>Inconfidência Mineira.</strong> Tiradentes lia Jefferson.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="year">Séc 19</div>
+          <div class="desc">Independências latino-americanas.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 77 — Tiradentes -->
+    <section class="slide">
+      <p>Os líderes da Inconfidência <strong>liam Jefferson</strong>.</p>
+      <p style="margin-top: 10px;">Sonhavam fundar uma república nos moldes americanos. No Brasil.</p>
+      <p class="big" style="margin-top: 14px;">Tiradentes foi enforcado por isso.</p>
+      <p style="margin-top: 14px; font-size: 14px; color: var(--ink-soft); font-style: italic;">A faísca americana queimou o mundo todo. Inclusive aqui.</p>
+    </section>
+
+    <!-- 78 — direitos individuais -->
+    <section class="slide">
+      <span class="stamp">Legado 06</span>
+      <h2 style="margin-top: 12px;">Cultura de direitos individuais.</h2>
+      <p style="margin-top: 14px;">A ideia de que o cidadão tem direitos <strong>inalienáveis</strong>, anteriores ao Estado, é marca cultural americana.</p>
+      <p style="margin-top: 12px;">Derivada direto da Declaração e do Bill of Rights.</p>
+      <p class="big" style="margin-top: 14px;">Exportada via influência americana, virou referência global de direitos humanos.</p>
+    </section>
+
+    <!-- 79 — REFLEXÃO FINAL -->
+    <section class="slide">
+      <div class="eyebrow">Reflexão final</div>
+      <p class="quote" style="font-size: 24px;">Ideias importam. Mas instituições importam mais.</p>
+    </section>
+
+    <!-- 80 -->
+    <section class="slide">
+      <p>A Revolução Francesa teve <strong>ideias incríveis</strong>.</p>
+      <p style="margin-top: 8px;">Os melhores filósofos. Os textos mais bonitos.</p>
+      <p style="margin-top: 14px;">E mesmo assim virou caos por décadas.</p>
+      <p class="big" style="margin-top: 14px;">Por quê?</p>
+      <p style="margin-top: 8px;">Porque não construiu instituições que segurassem essas ideias.</p>
+    </section>
+
+    <!-- 81 -->
+    <section class="slide">
+      <p>A Revolução Americana teve as <strong>mesmas ideias</strong>.</p>
+      <p style="margin-top: 12px;">Mas, em vez de só declarar, construiu uma estrutura institucional que carregasse a ideia adiante.</p>
+      <div style="margin-top: 14px; display: flex; flex-direction: column; gap: 6px;">
+        <div style="padding: 8px 12px; background: var(--paper); border-radius: 8px; font-size: 14px;">Constituição.</div>
+        <div style="padding: 8px 12px; background: var(--paper); border-radius: 8px; font-size: 14px;">Tribunais.</div>
+        <div style="padding: 8px 12px; background: var(--paper); border-radius: 8px; font-size: 14px;">Congresso.</div>
+        <div style="padding: 8px 12px; background: var(--paper); border-radius: 8px; font-size: 14px;">Presidência.</div>
+        <div style="padding: 8px 12px; background: var(--paper); border-radius: 8px; font-size: 14px;">Freios e contrapesos.</div>
+        <div style="padding: 8px 12px; background: var(--paper); border-radius: 8px; font-size: 14px;">Transição pacífica de poder.</div>
+      </div>
+    </section>
+
+    <!-- 82 — gestão -->
+    <section class="slide">
+      <p class="big">Vale pra você, Gustavo.</p>
+      <p style="margin-top: 16px;">Empresário que tem só ideia genial não vai longe.</p>
+      <p style="margin-top: 8px;">Empresa que vive de carisma do fundador desmorona quando o fundador sai.</p>
+      <p class="big" style="margin-top: 14px; color: var(--accent);">O que dura é instituição.</p>
+      <p style="margin-top: 10px;">Processo. Estrutura. Cultura embebida em sistema.</p>
+    </section>
+
+    <!-- 83 -->
+    <section class="slide">
+      <p class="quote">Quem constrói só visão, deixa um sonho que evapora. Quem constrói instituição, deixa uma máquina que continua andando depois que você sai da sala.</p>
+      <p style="margin-top: 16px; font-family: var(--serif); font-style: italic; font-size: 18px; color: var(--accent);">Pensa nisso.</p>
+      <p style="margin-top: 10px;">Você tá construindo só ideia, ou tá construindo estrutura?</p>
+    </section>
+
+    <!-- 84 — saber parar -->
+    <section class="slide">
+      <div class="eyebrow">Outra reflexão</div>
+      <p>O ato de <strong>parar</strong> pode ser mais decisivo que o ato de avançar.</p>
+      <p style="margin-top: 14px;">Washington abrindo mão da presidência criou um precedente que segurou a república por séculos.</p>
+      <p class="big" style="margin-top: 14px;">Tem momentos em que a coisa mais poderosa que você pode fazer é se conter.</p>
+    </section>
+
+    <!-- 85 -->
+    <section class="slide">
+      <p>Não acumular mais poder.</p>
+      <p>Não centralizar mais.</p>
+      <p>Não esticar mais.</p>
+      <p class="big" style="margin-top: 14px;">Recuar pra deixar a estrutura respirar.</p>
+      <p style="margin-top: 14px; font-size: 14px; color: var(--ink-soft); font-style: italic;">A maioria das pessoas ambiciosas tem pavor de parar. Quem entende, sabe que esse é o salto que diferencia <strong>construtor de instituição</strong> de cara que só faz barulho.</p>
+    </section>
+
+    <!-- 86 — RESUMÃO -->
+    <section class="slide">
+      <div class="eyebrow">Resumindo</div>
+      <div style="margin-top: 8px;">
+        <div class="timeline-item">
+          <div class="year">1775-83</div>
+          <div class="desc">Guerra de Independência.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="year">1776</div>
+          <div class="desc">Declaração de Independência.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="year">1787</div>
+          <div class="desc">Constituição.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="year">1791</div>
+          <div class="desc">Bill of Rights.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 87 -->
+    <section class="slide">
+      <p>A Revolução Americana <strong>inventou ou consolidou</strong>:</p>
+      <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 6px;">
+        <div style="padding: 8px 12px; background: var(--paper); border-radius: 8px; font-size: 14px;">Federalismo moderno.</div>
+        <div style="padding: 8px 12px; background: var(--paper); border-radius: 8px; font-size: 14px;">Presidencialismo.</div>
+        <div style="padding: 8px 12px; background: var(--paper); border-radius: 8px; font-size: 14px;">Freios e contrapesos.</div>
+        <div style="padding: 8px 12px; background: var(--paper); border-radius: 8px; font-size: 14px;">Constituição escrita codificada.</div>
+        <div style="padding: 8px 12px; background: var(--paper); border-radius: 8px; font-size: 14px;">Lista de direitos individuais.</div>
+        <div style="padding: 8px 12px; background: var(--paper); border-radius: 8px; font-size: 14px;">Transição pacífica de poder.</div>
+      </div>
+    </section>
+
+    <!-- 88 — fechamento -->
+    <section class="slide">
+      <p>Junto com a Revolução Francesa, completa o par que abriu, em <strong>fogo e em tinta</strong>, a Idade Contemporânea.</p>
+      <p class="big" style="margin-top: 14px; color: var(--accent);">As duas revoluções liberais clássicas.</p>
+      <p style="margin-top: 8px; font-family: var(--serif); font-style: italic; font-size: 18px;">Os manuais do mundo moderno.</p>
+    </section>
+
+    <!-- 89 — gancho próxima aula -->
+    <section class="slide">
+      <div class="eyebrow">Próxima aula</div>
+      <p>Enquanto a França explodia em guilhotina e os EUA escreviam Constituição…</p>
+      <p style="margin-top: 12px;">…do outro lado do Canal da Mancha, na Inglaterra calada, alguma coisa diferente estava acontecendo.</p>
+      <p class="big" style="margin-top: 14px;">Sem rei decapitado. Sem revolução política.</p>
+      <p style="margin-top: 10px;">Mas com impacto talvez ainda <strong>mais profundo</strong>.</p>
+    </section>
+
+    <!-- 90 -->
+    <section class="slide">
+      <div class="illu" style="margin-bottom: 18px; max-width: 200px;">
+        <svg viewBox="0 0 200 120" class="draw" fill="none" stroke="#B5342B" stroke-width="1.5">
+          <!-- fábrica com chaminés -->
+          <rect x="40" y="60" width="120" height="50"/>
+          <rect x="60" y="30" width="14" height="30"/>
+          <rect x="90" y="20" width="14" height="40"/>
+          <rect x="120" y="35" width="14" height="25"/>
+          <!-- fumaça -->
+          <path d="M67 30 Q63 20 70 12 Q77 6 73 0" stroke-dasharray="3 2"/>
+          <path d="M97 20 Q93 10 100 4" stroke-dasharray="3 2"/>
+          <path d="M127 35 Q123 25 130 18" stroke-dasharray="3 2"/>
+          <!-- janelas -->
+          <rect x="50" y="75" width="8" height="8"/>
+          <rect x="65" y="75" width="8" height="8"/>
+          <rect x="80" y="75" width="8" height="8"/>
+          <rect x="95" y="75" width="8" height="8"/>
+          <rect x="110" y="75" width="8" height="8"/>
+          <rect x="125" y="75" width="8" height="8"/>
+          <rect x="140" y="75" width="8" height="8"/>
+        </svg>
+      </div>
+      <p>Máquinas. Fábricas. Carvão. Fumaça.</p>
+      <p>Cidades inchando. Camponeses virando operários.</p>
+      <p>Crianças trabalhando 16 horas por dia.</p>
+      <p>Riqueza explodindo. Pobreza explodindo.</p>
+    </section>
+
+    <!-- 91 -->
+    <section class="slide">
+      <p class="big" style="color: var(--accent);">Revolução Industrial.</p>
+      <p style="margin-top: 16px;">Pegou as ideias da Revolução Francesa e os direitos da Revolução Americana e botou tudo pra rodar dentro de uma <strong>máquina econômica nova</strong>.</p>
+      <p style="margin-top: 14px;">Uma máquina que ainda tá rodando.</p>
+      <p style="margin-top: 10px;">Que mudou o que é ser humano, o que é trabalhar, o que é viver em sociedade.</p>
+      <p style="margin-top: 14px; font-family: var(--serif); font-style: italic; font-size: 18px; color: var(--accent);">É a próxima — e última — aula desse bloco.</p>
+      <p style="margin-top: 12px;">Até lá.</p>
+    </section>
+
+    <!-- 92 — INTRO QUIZ -->
+    <section class="slide quiz-intro">
+      <div class="quiz-icon">?</div>
+      <div class="eyebrow" style="text-align: center;">Hora do quiz</div>
+      <h2>Bora ver o que ficou.</h2>
+      <p style="margin-top: 14px;">Seis perguntas.<br>Se errar, eu te explico na hora.</p>
+    </section>
+
+    <!-- 93 — QUIZ 1 -->
+    <section class="slide" data-quiz="1">
+      <div class="question-num">Pergunta 1 de 6</div>
+      <div class="question">Qual foi o estopim concreto que transformou tensão em revolução?</div>
+      <div class="options">
+        <button class="option" data-correct="false" data-explain="A escravidão era contradição, mas não foi estopim da Revolução. Os colonos do Sul, inclusive, eram donos de escravos e lutaram pela independência.">
+          <span class="letter">A</span><span>A abolição da escravidão imposta por Londres.</span>
+        </button>
+        <button class="option" data-correct="true" data-explain="">
+          <span class="letter">B</span><span>Impostos britânicos sem representação no Parlamento.</span>
+        </button>
+        <button class="option" data-correct="false" data-explain="Não. A religião não foi o estopim. Os colonos do Norte tinham até liberdade religiosa relativa nas colônias.">
+          <span class="letter">C</span><span>A perseguição religiosa promovida pelo rei Jorge III.</span>
+        </button>
+      </div>
+      <div class="feedback right" data-fb="right"><span class="head">Boa.</span>Exato. Depois da Guerra dos Sete Anos, a Inglaterra cobrou imposto direto dos colonos pra pagar a dívida. Eles reagiram com o grito <strong>"no taxation without representation"</strong>. Sem voto no Parlamento, sem imposto.</div>
+      <div class="feedback miss" data-fb="miss"><span class="head">Não foi.</span><span data-explain-text></span><br><br><strong>A certa é a B.</strong> O estopim foi imposto sem representação. A Inglaterra precisava pagar a dívida da Guerra dos Sete Anos e taxou as colônias sem dar voto a elas no Parlamento.</div>
+    </section>
+
+    <!-- 94 — QUIZ 2 -->
+    <section class="slide" data-quiz="2">
+      <div class="question-num">Pergunta 2 de 6</div>
+      <div class="question">Por que a Constituição dos EUA é considerada engenharia política bem-sucedida?</div>
+      <div class="options">
+        <button class="option" data-correct="false" data-explain="Não. A Constituição americana, com defeitos e tudo, tem 240 anos e segue em vigor. É a Constituição escrita mais antiga do mundo ainda em uso.">
+          <span class="letter">A</span><span>Porque foi reescrita várias vezes e sempre se adaptou.</span>
+        </button>
+        <button class="option" data-correct="false" data-explain="Não. A Constituição original tinha um defeito gigantesco: manteve a escravidão. Foi corrigida só com a 13ª emenda, 80 anos depois.">
+          <span class="letter">B</span><span>Porque resolveu, de imediato, a questão da escravidão.</span>
+        </button>
+        <button class="option" data-correct="true" data-explain="">
+          <span class="letter">C</span><span>Porque criou freios e contrapesos que duraram 240 anos.</span>
+        </button>
+      </div>
+      <div class="feedback right" data-fb="right"><span class="head">É isso.</span>Exatamente. Federalismo, separação de poderes, bicameralismo, presidente com mandato limitado, Constituição escrita com mecanismo de emenda. Tudo desenhado pra impedir tirania <strong>e</strong> permitir governo funcionar. É lento, é frustrante, mas dura.</div>
+      <div class="feedback miss" data-fb="miss"><span class="head">Quase.</span><span data-explain-text></span><br><br><strong>A certa é a C.</strong> O segredo foi o sistema de freios e contrapesos: cada poder podendo bloquear o outro em pontos específicos. Tirania quase impossível.</div>
+    </section>
+
+    <!-- 95 — QUIZ 3 -->
+    <section class="slide" data-quiz="3">
+      <div class="question-num">Pergunta 3 de 6</div>
+      <div class="question">Qual gesto de George Washington fundou a tradição americana de transição pacífica de poder?</div>
+      <div class="options">
+        <button class="option" data-correct="false" data-explain="Não. A vitória militar foi importante, mas o gesto que fundou a tradição democrática foi outro — e veio depois da guerra.">
+          <span class="letter">A</span><span>Vencer a guerra contra o exército inglês.</span>
+        </button>
+        <button class="option" data-correct="true" data-explain="">
+          <span class="letter">B</span><span>Abrir mão voluntariamente do cargo após dois mandatos.</span>
+        </button>
+        <button class="option" data-correct="false" data-explain="Não. Washington presidiu a Convenção, mas o gesto que fundou a tradição democrática foi se retirar voluntariamente do poder em 1797.">
+          <span class="letter">C</span><span>Presidir a Convenção da Filadélfia em 1787.</span>
+        </button>
+      </div>
+      <div class="feedback right" data-fb="right"><span class="head">Mandou bem.</span>Washington podia ter virado <strong>rei vitalício</strong>. Escolheu não virar. Em 1797 saiu voluntariamente. Esse gesto fundou a tradição de transição pacífica de poder — que dura até hoje, com sustos recentes.</div>
+      <div class="feedback miss" data-fb="miss"><span class="head">Não foi essa.</span><span data-explain-text></span><br><br><strong>A certa é a B.</strong> O gesto fundador foi sair do poder voluntariamente. Em estratégia, em vida: muitas vezes saber <em>quando parar</em> é mais poderoso que continuar avançando.</div>
+    </section>
+
+    <!-- 96 — QUIZ 4 -->
+    <section class="slide" data-quiz="4">
+      <div class="question-num">Pergunta 4 de 6</div>
+      <div class="question">Por que a Revolução Americana foi mais "cirúrgica" que a Francesa, com a mesma base ideológica?</div>
+      <div class="options">
+        <button class="option" data-correct="false" data-explain="Pelo contrário. Os americanos liam o Iluminismo com profundidade — Jefferson era leitor obsessivo de Locke. A diferença não foi nas ideias, foi nas condições.">
+          <span class="letter">A</span><span>Porque os americanos rejeitaram o Iluminismo.</span>
+        </button>
+        <button class="option" data-correct="true" data-explain="">
+          <span class="letter">B</span><span>Por experiência prévia de autogoverno, elite mais homogênea, líderes que souberam parar e isolamento geográfico.</span>
+        </button>
+        <button class="option" data-correct="false" data-explain="Não foi sorte simples. Foram condições estruturais bem específicas — práticas, sociais, políticas e geográficas — que criaram um ambiente diferente.">
+          <span class="letter">C</span><span>Por pura sorte. Foi questão de coincidência histórica.</span>
+        </button>
+      </div>
+      <div class="feedback right" data-fb="right"><span class="head">Show.</span>Quatro fatores, juntos. 150 anos de assembleias coloniais (prática). Elite de fazendeiros e advogados (menos polarização). Líderes que sabiam consolidar (Washington, Madison, Franklin). E o Atlântico no meio, garantindo paz pra construir. <strong>A Francesa não tinha nenhum desses.</strong></div>
+      <div class="feedback miss" data-fb="miss"><span class="head">Não é por aí.</span><span data-explain-text></span><br><br><strong>A certa é a B.</strong> Foram quatro condições estruturais: experiência prévia, elite homogênea, liderança que soube parar, e isolamento geográfico.</div>
+    </section>
+
+    <!-- 97 — QUIZ 5 -->
+    <section class="slide" data-quiz="5">
+      <div class="question-num">Pergunta 5 de 6</div>
+      <div class="question">Qual foi o "defeito gigantesco" da Constituição americana original?</div>
+      <div class="options">
+        <button class="option" data-correct="false" data-explain="Não. O voto às mulheres veio só em 1920 com a 19ª emenda, mas isso era padrão da época — não era visto como contradição central. A contradição central era outra.">
+          <span class="letter">A</span><span>Não dar voto às mulheres.</span>
+        </button>
+        <button class="option" data-correct="false" data-explain="Não. O federalismo foi exatamente uma das invenções mais bem-sucedidas. Estado em camadas: União, estados, municípios. Virou referência mundial.">
+          <span class="letter">B</span><span>Não ter criado o federalismo.</span>
+        </button>
+        <button class="option" data-correct="true" data-explain="">
+          <span class="letter">C</span><span>Manter a escravidão e contar escravos como "três quintos" de pessoa.</span>
+        </button>
+      </div>
+      <div class="feedback right" data-fb="right"><span class="head">Isso.</span>Escrever "todos os homens são criados iguais" e manter milhões escravizados é a contradição original dos EUA. Resolvida só 80 anos depois, na Guerra Civil. <strong>600 mil mortos</strong>. Mais americanos do que em todas as outras guerras americanas somadas.</div>
+      <div class="feedback miss" data-fb="miss"><span class="head">Não foi essa.</span><span data-explain-text></span><br><br><strong>A certa é a C.</strong> A Constituição manteve a escravidão e fez o compromisso vergonhoso dos "três quintos". Foi a chaga aberta no nascimento dos EUA — que cobrou em sangue na Guerra Civil.</div>
+    </section>
+
+    <!-- 98 — QUIZ 6 -->
+    <section class="slide" data-quiz="6">
+      <div class="question-num">Pergunta 6 de 6</div>
+      <div class="question">Qual é a grande lição estratégica da Revolução Americana pra gestão e vida?</div>
+      <div class="options">
+        <button class="option" data-correct="false" data-explain="Pelo contrário. A lição americana é justamente que ideia sozinha não basta. A Francesa tinha as melhores ideias e virou caos.">
+          <span class="letter">A</span><span>Que ter a melhor ideia é o que mais importa.</span>
+        </button>
+        <button class="option" data-correct="true" data-explain="">
+          <span class="letter">B</span><span>Que instituições importam mais que ideias — quem constrói estrutura ganha; quem só declara, perde.</span>
+        </button>
+        <button class="option" data-correct="false" data-explain="Não. A Constituição americana foi um sucesso porque era escrita, codificada, com mecanismo de emenda. Documento curto e claro é justamente a invenção que virou padrão mundial.">
+          <span class="letter">C</span><span>Que escrever Constituição é perda de tempo.</span>
+        </button>
+      </div>
+      <div class="feedback right" data-fb="right"><span class="head">Fechou.</span>A Francesa teve as ideias mais bonitas e virou caos. A Americana teve as mesmas ideias e durou 240 anos. <strong>Diferença? Instituição.</strong> Vale pra empresa: visão sozinha evapora. Quem constrói processo, estrutura, cultura — deixa máquina rodando depois que sai da sala.</div>
+      <div class="feedback miss" data-fb="miss"><span class="head">Quase.</span><span data-explain-text></span><br><br><strong>A certa é a B.</strong> Ideias importam, mas instituições importam mais. Quem constrói só visão, deixa um sonho que evapora. Quem constrói instituição, deixa uma máquina que continua andando.</div>
+    </section>
+
+    <!-- 99 — TELA FINAL -->
+    <section class="slide end">
+      <div class="eyebrow" style="text-align: center; color: var(--accent-soft);">Aula 12 · concluída</div>
+      <h2>Sua pontuação</h2>
+      <div class="score" id="finalScore">0/6</div>
+      <p id="finalMsg">Você entendeu como ideia vira instituição.</p>
+      <button class="restart" id="restartBtn">Voltar ao início</button>
+    </section>
+
+  </div>
+
+  <div class="tap-zone left" id="tapLeft"></div>
+  <div class="tap-zone right" id="tapRight"></div>
+</div>
+
+<script>
+(function() {
+  const slidesEl = document.getElementById('slides');
+  const slides = Array.from(slidesEl.querySelectorAll('.slide'));
+  const progressEl = document.getElementById('progress');
+  const counter = document.getElementById('counter');
+  const tapLeft = document.getElementById('tapLeft');
+  const tapRight = document.getElementById('tapRight');
+  let idx = 0;
+  let score = 0;
+  const totalQuiz = slidesEl.querySelectorAll('[data-quiz]').length;
+
+  // Build progress segments
+  slides.forEach((_, i) => {
+    const seg = document.createElement('div');
+    seg.className = 'seg';
+    seg.dataset.idx = i;
+    progressEl.appendChild(seg);
+  });
+  const segs = Array.from(progressEl.querySelectorAll('.seg'));
+
+  function go(n) {
+    if (n < 0 || n >= slides.length) return;
+    slides[idx].classList.remove('active', 'prev');
+    if (n < idx) slides[idx].classList.add('prev');
+    idx = n;
+    slides.forEach((s, i) => {
+      s.classList.toggle('active', i === idx);
+      if (i < idx) s.classList.add('prev'); else s.classList.remove('prev');
+    });
+    // re-trigger animations
+    const active = slides[idx];
+    active.querySelectorAll('*').forEach(el => {
+      // nada — animação CSS já dispara via .active
+    });
+    updateProgress();
+  }
+
+  function updateProgress() {
+    segs.forEach((s, i) => {
+      s.classList.remove('done', 'current');
+      if (i < idx) s.classList.add('done');
+      if (i === idx) s.classList.add('current');
+    });
+    counter.textContent = (idx + 1) + ' / ' + slides.length;
+  }
+
+  function next() { if (idx < slides.length - 1) go(idx + 1); }
+  function prev() { if (idx > 0) go(idx - 1); }
+
+  tapRight.addEventListener('click', next);
+  tapLeft.addEventListener('click', prev);
+
+  // Swipe
+  let touchX = 0, touchY = 0, touchT = 0;
+  slidesEl.addEventListener('touchstart', e => {
+    touchX = e.touches[0].clientX;
+    touchY = e.touches[0].clientY;
+    touchT = Date.now();
+  }, {passive: true});
+  slidesEl.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchX;
+    const dy = e.changedTouches[0].clientY - touchY;
+    const dt = Date.now() - touchT;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) && dt < 500) {
+      if (dx < 0) next(); else prev();
+    }
+  }, {passive: true});
+
+  // Progress bar interactive
+  let dragging = false;
+  function segFromX(clientX) {
+    const r = progressEl.getBoundingClientRect();
+    const rel = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
+    return Math.min(slides.length - 1, Math.floor(rel * slides.length));
+  }
+  progressEl.addEventListener('click', e => {
+    if (e.target.classList.contains('seg')) {
+      go(parseInt(e.target.dataset.idx));
+    } else {
+      go(segFromX(e.clientX));
+    }
+  });
+  progressEl.addEventListener('touchstart', e => {
+    dragging = true;
+    go(segFromX(e.touches[0].clientX));
+  }, {passive: true});
+  progressEl.addEventListener('touchmove', e => {
+    if (!dragging) return;
+    go(segFromX(e.touches[0].clientX));
+  }, {passive: true});
+  progressEl.addEventListener('touchend', () => { dragging = false; });
+
+  // Quiz logic
+  slidesEl.querySelectorAll('[data-quiz]').forEach(quizSlide => {
+    const options = quizSlide.querySelectorAll('.option');
+    options.forEach(opt => {
+      opt.addEventListener('click', () => {
+        if (quizSlide.dataset.answered) return;
+        quizSlide.dataset.answered = '1';
+        const isCorrect = opt.dataset.correct === 'true';
+        const correctOpt = quizSlide.querySelector('.option[data-correct="true"]');
+        if (isCorrect) {
+          opt.classList.add('correct');
+          score++;
+          quizSlide.querySelector('[data-fb="right"]').classList.add('show');
+        } else {
+          opt.classList.add('wrong');
+          correctOpt.classList.add('correct');
+          const miss = quizSlide.querySelector('[data-fb="miss"]');
+          const tgt = miss.querySelector('[data-explain-text]');
+          if (tgt) tgt.textContent = opt.dataset.explain || '';
+          miss.classList.add('show');
+        }
+        options.forEach(o => { if (o !== opt && o !== correctOpt) o.classList.add('disabled'); });
+        opt.classList.add('disabled');
+        correctOpt.classList.add('disabled');
+      });
+    });
+  });
+
+  // Final score
+  function showFinal() {
+    document.getElementById('finalScore').textContent = score + '/' + totalQuiz;
+    const msg = document.getElementById('finalMsg');
+    const pct = score / totalQuiz;
+    if (pct === 1) msg.textContent = 'Perfeito. Você capturou o essencial: ideia sem instituição evapora.';
+    else if (pct >= 0.7) msg.textContent = 'Muito bem. Você pegou a lógica de como ideia vira estrutura.';
+    else if (pct >= 0.5) msg.textContent = 'Tá no caminho. Vale revisar como freios e contrapesos funcionam.';
+    else msg.textContent = 'Vale dar mais uma passada. A aula tá toda aqui — sem pressa.';
+  }
+
+  // Observe when reaching end slide
+  const endSlide = slides[slides.length - 1];
+  const obs = new MutationObserver(() => {
+    if (endSlide.classList.contains('active')) showFinal();
+  });
+  obs.observe(endSlide, { attributes: true, attributeFilter: ['class'] });
+
+  document.getElementById('restartBtn').addEventListener('click', () => {
+    score = 0;
+    slidesEl.querySelectorAll('[data-quiz]').forEach(q => {
+      delete q.dataset.answered;
+      q.querySelectorAll('.option').forEach(o => o.classList.remove('correct', 'wrong', 'disabled'));
+      q.querySelectorAll('.feedback').forEach(f => f.classList.remove('show'));
+    });
+    go(0);
+  });
+
+  updateProgress();
+})();
+</script>
+
+</body>
+</html>
